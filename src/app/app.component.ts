@@ -14,7 +14,7 @@ export class AppComponent implements OnInit {
   constructor(
     private _formBuilder: FormBuilder,
     private _neuralNetworkService: NeuralNetworkService,
-    private _voiceRecognitionService: VoiceRecognitionService
+    public voiceRecognitionService: VoiceRecognitionService
   ) { }
 
   ngOnInit(): void {
@@ -24,8 +24,16 @@ export class AppComponent implements OnInit {
     });
     this.addAnswer();
     this.addQuestion();
+    this.voiceRecognitionService.init();
   }
 
+  startVoiceRecognition() {
+    this.voiceRecognitionService.start();
+  }
+
+  stopVoiceRecognition() {
+    this.voiceRecognitionService.stop();
+  }
 
   addQuestion(): void {
     const questionsForm = this._formBuilder.group({
@@ -52,18 +60,20 @@ export class AppComponent implements OnInit {
   save(): void {
     const { answers, questions } = this.formTraining.value;
     const formValue: NeuralNetwork = {
-      patterns: answers.map((answer: { value: string }) => answer.value),
-      responses: questions.map((question: { value: string }) => question.value),
+      patterns: questions.map((question: { value: string }) => question.value).filter((question: string) => question !== ''),
+      responses: answers.map((answer: { value: string }) => answer.value).filter((answer: string) => answer !== ''),
     }
+    if (formValue.patterns.length == 0) return console.log('Form Invalid');
+    if (formValue.responses.length == 0) return console.log('Form Invalid');;
     this._neuralNetworkService
       .trainNeuralNetwork(formValue)
-      .subscribe(
-        {
-          next: (response) => { console.log(response) },
-          error: (error) => { console.log(error) },
-        }
-      )
+      .subscribe({
+        next: (response) => { console.log(response) },
+        error: (error) => { console.log(error) },
+      })
   }
+
+
 
   get questions(): FormArray<FormGroup<{ value: FormControl<string | null> }>> {
     return this.formTraining.controls["questions"] as FormArray;
