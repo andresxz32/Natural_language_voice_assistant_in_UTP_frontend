@@ -62,11 +62,12 @@ export class AppComponent implements OnInit {
     const formValue: NeuralNetwork = {
       patterns: questions.map((question: { value: string }) => question.value).filter((question: string) => question !== ''),
       responses: answers.map((answer: { value: string }) => answer.value).filter((answer: string) => answer !== ''),
+      context: []
     }
     if (formValue.patterns.length == 0) return console.log('Form Invalid');
     if (formValue.responses.length == 0) return console.log('Form Invalid');;
     this._neuralNetworkService
-      .trainNeuralNetwork(formValue)
+      .createIntent(formValue)
       .subscribe({
         next: (response) => { console.log(response) },
         error: (error) => { console.log(error) },
