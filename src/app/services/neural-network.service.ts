@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 export interface NeuralNetwork {
@@ -22,6 +22,7 @@ export class NeuralNetworkService {
   }
 
   callNeuralNetwork(text: string): Observable<string> {
-    return this._http.post<string>(`${this._routeAPI}/call_neural_network`, { data: text });
+    return this._http.post<string>(`${this._routeAPI}/call_neural_network`, { data: text })
+    .pipe(map((response: any) => response.Message));
   }
 }
