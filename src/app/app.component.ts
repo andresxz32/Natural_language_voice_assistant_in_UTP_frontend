@@ -69,9 +69,24 @@ export class AppComponent implements OnInit {
     this._neuralNetworkService
       .createIntent(formValue)
       .subscribe({
-        next: (response) => { console.log(response) },
+        next: (response) => { 
+          this.formTraining.reset();
+          this.resetFormArrays();
+          console.log(response)
+         },
         error: (error) => { console.log(error) },
       })
+  }
+
+  resetFormArrays():void{
+    while (this.questions.length !== 0) {
+      this.questions.removeAt(0)
+    }
+    while (this.answers.length !== 0) {
+      this.answers.removeAt(0)
+    }
+    this.addAnswer();
+    this.addQuestion();
   }
 
 
